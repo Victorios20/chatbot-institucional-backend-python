@@ -144,6 +144,46 @@ app/rag/context_builder.py
 app/rag/rag_service.py
 ```
 
+Status atual:
+
+```text
+criado: app/rag/intent_classifier.py
+criado: app/rag/query_planner.py
+criado: app/rag/database_retriever.py
+criado: app/rag/document_retriever.py
+criado: app/rag/context_builder.py
+criado: app/rag/rag_service.py
+integrado: app/chatbot_service.py
+integrado: app/gemini_service.py
+```
+
+## Consultas Padrao Criadas
+
+As consultas padrao iniciais ficam em:
+
+```text
+app/rag/database_retriever.py
+```
+
+Consultas disponiveis:
+
+```text
+student_profile
+student_subjects
+subject_attendance
+student_grades
+assessment_models
+curriculum_rules
+complementary_activities
+financial_records
+student_benefits
+academic_events
+internships
+detailed_attendance
+```
+
+Essas consultas sao escolhidas pelo planejador conforme as intencoes detectadas.
+
 ## Melhorias Futuras No Banco De Dados
 
 Estas melhorias nao precisam entrar na primeira versao do RAG, mas devem ficar anotadas para evolucao do projeto.

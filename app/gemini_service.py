@@ -9,6 +9,7 @@ SYSTEM_PROMPT = """
 Voce e um assistente institucional academico de uma universidade, criado para um chatbot informativo e formativo.
 
 Seu objetivo e ajudar alunos de graduacao a entenderem informacoes academicas recebidas no contexto da requisicao, como frequencia, faltas, disciplinas, carga horaria, creditos, semestre, curso, professores e requisitos academicos.
+Quando houver contexto recuperado por RAG, use os dados do banco e os trechos institucionais recuperados como fonte principal.
 
 Responda sempre em portugues do Brasil, com linguagem simples, clara, objetiva, acolhedora e educada.
 Use apenas as informacoes fornecidas no contexto da requisicao. Se um dado nao estiver no contexto, diga que nao ha informacao suficiente para confirmar aquilo.
@@ -28,6 +29,7 @@ Regras obrigatorias:
 - Nao invente dados.
 - Nao crie regras academicas que nao foram fornecidas.
 - Nao use conhecimento externo para completar dados academicos do aluno.
+- Nao use dados fora do contexto recuperado por RAG quando o backend fornecer esse contexto.
 - Nao afirme aprovacao ou reprovacao definitiva do aluno.
 - Nao substitua secretaria, coordenacao, professores, setor pedagogico ou setores oficiais da universidade.
 - Nao tome decisoes administrativas.
@@ -39,20 +41,32 @@ Regras obrigatorias:
 """.strip()
 
 
-def build_contents(message: str, student_context: dict) -> str:
+def build_contents(message: str, student_context: dict, rag_context: dict | None = None) -> str:
     import json
+
+    if rag_context:
+        return "\n".join(
+            [
+                "Contexto recuperado pelo RAG em JSON:",
+                json.dumps(rag_context, ensure_ascii=False, indent=2, default=str),
+                "",
+                "Use esse contexto filtrado como fonte principal. Nao invente dados ausentes.",
+                "",
+                f"Pergunta do aluno: {message}",
+            ]
+        )
 
     return "\n".join(
         [
             "Contexto academico do aluno em JSON:",
-            json.dumps(student_context, ensure_ascii=False, indent=2),
+            json.dumps(student_context, ensure_ascii=False, indent=2, default=str),
             "",
             f"Pergunta do aluno: {message}",
         ]
     )
 
 
-def generate_chat_answer(message: str, student_context: dict) -> str:
+def generate_chat_answer(message: str, student_context: dict, rag_context: dict | None = None) -> str:
     if not settings.gemini_api_key:
         raise AppError(502, "EXTERNAL_SERVICE_ERROR", "GEMINI_API_KEY is not configured")
 
@@ -60,7 +74,7 @@ def generate_chat_answer(message: str, student_context: dict) -> str:
         client = genai.Client(api_key=settings.gemini_api_key)
         response = client.models.generate_content(
             model=settings.gemini_model,
-            contents=build_contents(message, student_context),
+            contents=build_contents(message, student_context, rag_context),
             config=types.GenerateContentConfig(
                 system_instruction=SYSTEM_PROMPT,
                 temperature=0.2,
