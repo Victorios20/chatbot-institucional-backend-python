@@ -6,22 +6,37 @@ from app.database import get_connection
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_SOURCES = [
-    PROJECT_ROOT / "migrations",
     PROJECT_ROOT.parent / "chatbot-institucional" / "university-erp-service" / "src" / "main" / "resources" / "db" / "migration",
+    PROJECT_ROOT / "migrations",
 ]
 
 
-def migration_source() -> Path:
-    for source in DEFAULT_SOURCES:
-        if source.exists():
-            return source
+def migration_number(file: Path) -> int:
+    return int(file.stem.split("__", 1)[0].removeprefix("V"))
+
+
+def migration_files(source: Path | None = None) -> list[Path]:
+    if source:
+        files = sorted(source.glob("V*.sql"), key=migration_number)
+        if files:
+            return files
+
+    files_by_version: dict[str, Path] = {}
+    for source_path in DEFAULT_SOURCES:
+        if not source_path.exists():
+            continue
+        for file in sorted(source_path.glob("V*.sql"), key=migration_number):
+            files_by_version.setdefault(file.stem, file)
+
+    if files_by_version:
+        return sorted(files_by_version.values(), key=migration_number)
+
     raise RuntimeError("Nenhuma pasta de migrations encontrada.")
 
 
-def run_migrations(source: Path) -> None:
-    files = sorted(source.glob("V*.sql"))
+def run_migrations(files: list[Path]) -> None:
     if not files:
-        raise RuntimeError(f"Nenhuma migration SQL encontrada em {source}")
+        raise RuntimeError("Nenhuma migration SQL encontrada.")
 
     with get_connection() as conn:
         conn.execute(
@@ -39,13 +54,14 @@ def run_migrations(source: Path) -> None:
 
         schema_already_exists = conn.execute("SELECT to_regclass('public.courses') AS table_name").fetchone()["table_name"]
         if schema_already_exists and not applied:
-            for file in files:
+            baseline_files = [file for file in files if migration_number(file) <= 4]
+            for file in baseline_files:
                 conn.execute(
                     "INSERT INTO python_schema_migrations (version) VALUES (%s) ON CONFLICT DO NOTHING",
                     (file.stem,),
                 )
-            print("Banco ja tinha o schema academico. Migrations marcadas como aplicadas.")
-            return
+                applied.add(file.stem)
+            print("Banco ja tinha o schema academico base. Migrations antigas marcadas como aplicadas.")
 
         for file in files:
             version = file.stem
@@ -64,8 +80,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Aplica as migrations SQL do backend Python.")
     parser.add_argument("--source", type=Path, default=None, help="Pasta de migrations SQL.")
     args = parser.parse_args()
-    source = args.source or migration_source()
-    run_migrations(source)
+    run_migrations(migration_files(args.source))
 
 
 if __name__ == "__main__":
