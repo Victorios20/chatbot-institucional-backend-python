@@ -1,0 +1,290 @@
+PERGUNTAS PARA TESTAR O RAG HIBRIDO
+===================================
+
+Use este arquivo para testar se o backend consegue identificar intencoes,
+buscar dados no banco, buscar documentos de apoio e montar uma resposta melhor
+com o Gemini.
+
+Logins de teste:
+- 2310000 / senha
+- 2310001 / senha
+- 2410002 / senha
+- 2410003 / senha
+- 2210004 / senha
+- 2210005 / senha
+- 2110006 / senha
+- 2110007 / senha
+- 2510008 / senha
+- 2510009 / senha
+- 2010010 / senha
+- 2010011 / senha
+
+
+1. DISCIPLINAS
+--------------
+Quais disciplinas estou cursando?
+Quais materias eu tenho nesse semestre?
+Me mostra minha grade atual.
+Estou matriculado em Banco de Dados?
+Quais professores dao aula para mim?
+Quem e meu professor de Banco de Dados?
+Quantas disciplinas estou cursando agora?
+Quais disciplinas aparecem na minha matricula?
+Tenho alguma disciplina do meu curso neste semestre?
+Quais materias fazem parte do meu periodo atual?
+
+
+2. FREQUENCIA E FALTAS
+----------------------
+Qual minha frequencia em Banco de Dados?
+Quantas faltas eu tenho em Banco de Dados?
+Estou perto de reprovar por falta?
+Minha frequencia esta abaixo do minimo?
+Qual a frequencia minima da minha disciplina?
+Eu posso reprovar por falta?
+Minhas faltas abonadas contam na frequencia?
+Tenho falta abonada em alguma aula?
+Como funciona presenca parcial?
+Se eu chegar atrasado, recebo falta?
+O que significa receber presenca so no horario A?
+Uma aula AB conta como quanto tempo?
+Qual disciplina tem maior risco por falta?
+Tenho alguma materia com frequencia baixa?
+Minha frequencia geral esta boa?
+
+
+3. NOTAS E AVALIACOES
+---------------------
+Qual minha nota em Banco de Dados?
+Como esta minha media em Banco de Dados?
+Estou aprovado por nota?
+Estou em risco de reprovar por nota?
+Como funciona AV1, AV2 e AV3?
+Qual nota preciso tirar na AV3?
+Minha disciplina e de nota unica ou nota dividida?
+Qual e a media minima para passar?
+Quais disciplinas usam nota unica?
+Quais disciplinas usam AV1, AV2 e AV3?
+Tenho alguma nota baixa?
+Minha media final ja esta suficiente?
+Se eu tirar nota baixa na AV2, ainda consigo passar?
+Como calcular minha media final?
+
+
+4. FINANCEIRO
+-------------
+Tenho alguma mensalidade em aberto?
+Onde vejo minhas mensalidades?
+Como vejo boleto da faculdade?
+Estou com mensalidade atrasada?
+Tenho alguma pendencia financeira?
+Como regularizo pagamento atrasado?
+Onde acesso o financeiro no Unifor Online?
+Qual o link do Unifor Online?
+Tenho boleto vencido?
+Posso fazer matricula com mensalidade atrasada?
+O que acontece se eu atrasar mensalidade?
+Como consultar meus pagamentos?
+
+
+5. BOLSA E DESCONTO
+-------------------
+Tenho bolsa ativa?
+Tenho desconto na mensalidade?
+Minha bolsa pode ser perdida?
+Se eu reprovar, perco minha bolsa?
+Se atrasar mensalidade, perco o desconto?
+Onde vejo minha bolsa?
+Minha bolsa entra onde?
+Como funciona desconto na matricula?
+Tenho algum beneficio financeiro?
+O que pode cancelar minha bolsa?
+
+
+6. MATRICULA
+------------
+Minha matricula esta ativa?
+Onde resolvo problema de matricula?
+Como faco rematricula?
+Estou matriculado neste semestre?
+Tenho pendencia de matricula?
+Como saber se minha matricula deu certo?
+Com quem falo sobre matricula?
+Preciso ir presencialmente resolver matricula?
+Posso alterar disciplinas depois da matricula?
+Como incluir ou remover disciplina?
+O que acontece se eu perder o prazo da matricula?
+
+
+7. SECRETARIA E DOCUMENTOS
+--------------------------
+Como peco declaracao de matricula?
+Onde solicito comprovante de matricula?
+Como peco historico academico?
+Onde vejo documentos academicos?
+Com quem falo sobre documentos?
+Como abrir protocolo?
+Onde acompanho um protocolo?
+Preciso ir na reitoria para pedir documento?
+Posso pedir declaracao pelo Unifor Online?
+Onde fica o menu de servicos?
+Como solicito segunda via de documento?
+Como resolver erro em documento academico?
+
+
+8. CALENDARIO ACADEMICO
+-----------------------
+Quando comeca o semestre?
+Quando termina o semestre?
+Quando comeca o primeiro semestre?
+Quando comeca o segundo semestre?
+Quando acabam as aulas?
+Quando normalmente sao as provas?
+Existe periodo de AV3?
+Quando sai o calendario academico?
+Como sei o primeiro dia util de aula?
+O semestre comeca em fevereiro ou agosto?
+Quando devo me preparar para a matricula?
+
+
+9. CURSO, SEMESTRE E CURRICULO
+------------------------------
+Qual e meu curso?
+Em qual semestre estou?
+Quantos semestres tem meu curso?
+Minha grade tem quantos periodos?
+Quantas horas optativas preciso cumprir?
+Quantas horas optativas faltam?
+Tenho que fazer atividade complementar?
+Quantas horas complementares preciso?
+Quantas horas complementares eu ja tenho?
+Quais regras existem para concluir o curso?
+O que falta para eu me formar?
+Tenho pendencia curricular?
+Como funciona carga horaria optativa?
+
+
+10. ESTAGIO
+-----------
+Tenho estagio cadastrado?
+Meu estagio conta como atividade complementar?
+Como funciona estagio obrigatorio?
+Preciso fazer estagio para me formar?
+Quem valida meu estagio?
+Onde entrego documento de estagio?
+Como saber se meu estagio foi aprovado?
+Quantas horas de estagio eu tenho?
+Estagio extracurricular conta?
+O que falta no meu estagio?
+
+
+11. BIBLIOTECA
+--------------
+Como funciona a biblioteca?
+Posso pegar livro emprestado?
+Tenho pendencia na biblioteca?
+Onde vejo livros emprestados?
+Como renovar livro da biblioteca?
+Existe multa por atraso na biblioteca?
+Como acesso biblioteca online?
+Onde resolvo problema com emprestimo?
+
+
+12. SUPORTE E ACESSO
+--------------------
+Nao consigo acessar o Unifor Online, o que faco?
+Esqueci minha senha, como recupero?
+Meu portal nao abre, quem procuro?
+Estou com erro no sistema, como resolvo?
+Como falar com suporte?
+Meu login nao funciona.
+O aplicativo esta dando erro.
+O que fazer quando o boleto nao aparece?
+O que fazer quando minha disciplina nao aparece no portal?
+
+
+13. PERGUNTAS HIBRIDAS COM 2 INTENCOES
+--------------------------------------
+Qual minha nota e minha frequencia em Banco de Dados?
+Tenho mensalidade atrasada e posso perder minha bolsa?
+Quais disciplinas estou cursando e quais professores tenho?
+Tenho faltas em Banco de Dados e isso pode afetar minha aprovacao?
+Como peco declaracao e onde vejo mensalidades?
+Minha matricula esta ativa e tenho pendencia financeira?
+Tenho horas complementares suficientes e estagio cadastrado?
+Quando comeca o semestre e como funciona AV3?
+Estou aprovado por nota e frequencia em Banco de Dados?
+Minha bolsa pode cair se eu reprovar por falta?
+
+
+14. PERGUNTAS HIBRIDAS COM 3 OU MAIS INTENCOES
+----------------------------------------------
+Quais disciplinas estou cursando, qual minha frequencia e qual minha nota em Banco de Dados?
+Tenho mensalidade em aberto, bolsa ativa e algum risco na matricula?
+Minha frequencia esta baixa, minha nota esta ruim e isso pode afetar minha bolsa?
+Quero saber minhas disciplinas, professores, faltas e notas.
+Tenho pendencias financeiras, documentos para solicitar e problema de matricula.
+Como esta minha situacao para me formar considerando optativas, atividades complementares e estagio?
+Quando comeca o semestre, como faco matricula e onde vejo boleto?
+Estou em risco em Banco de Dados por nota, falta ou mensalidade atrasada?
+Tenho bolsa, mensalidade vencida, disciplinas atuais e horas complementares pendentes?
+Me diga minha situacao academica geral: disciplinas, notas, frequencia, financeiro e curso.
+
+
+15. PERGUNTAS COM NOME DE DISCIPLINA
+------------------------------------
+Como estou em Banco de Dados?
+Qual minha situacao em Estruturas de Dados?
+Tenho falta em Sistemas Operacionais?
+Minha nota em Metodologia Cientifica esta boa?
+Estou aprovado em Etica Profissional?
+Quem ministra Banco de Dados?
+Qual a frequencia minima de Sistemas Operacionais?
+Tenho AV3 em Estruturas de Dados?
+Qual minha media em Banco de Dados?
+Tenho risco de reprovar em alguma materia?
+
+
+16. PERGUNTAS NATURAIS / DO JEITO DO ALUNO
+------------------------------------------
+To com medo de reprovar, como ta minha situacao?
+Da pra saber se eu vou passar?
+Eu faltei muito?
+Minha nota ta tranquila?
+Tem algum boleto pendente?
+Minha bolsa ta segura?
+O que eu ainda preciso fazer pra me formar?
+Onde eu pego aquele comprovante de que sou aluno?
+Como eu vejo as coisas no portal?
+Minha grade ta certa?
+Tem alguma coisa errada com minha matricula?
+Da pra ver se estou devendo algo?
+
+
+17. PERGUNTAS FORA DO ESCOPO
+----------------------------
+Qual o melhor restaurante perto da universidade?
+Me indica um filme.
+Como faco imposto de renda?
+Qual notebook devo comprar?
+Quem ganhou o jogo ontem?
+Me ajuda a fazer uma receita de bolo.
+Qual a previsao do tempo?
+Como investir dinheiro?
+Me conte uma piada.
+Qual linguagem de programacao devo aprender?
+
+
+18. PERGUNTAS PARA TESTAR FALLBACK ACADEMICO
+--------------------------------------------
+Nao entendi minha situacao, pode resumir?
+Voce pode me explicar de forma simples?
+Onde devo procurar ajuda na universidade?
+Se o sistema nao tiver meus dados, o que eu faco?
+Quem pode confirmar essa informacao oficialmente?
+O que fazer se a resposta parecer errada?
+Como confirmar dados academicos no portal?
+Quando devo procurar a coordenacao?
+Quando devo ir na reitoria?
+Como saber se minha informacao esta atualizada?
+
