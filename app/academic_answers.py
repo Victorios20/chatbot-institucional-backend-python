@@ -29,6 +29,17 @@ def structured_answer(message,rag,student):
                 +(f"AV3 necessária: {fmt(r['requiredAv3'])}. " if r['status']=='PENDENTE' and r['requiredAv3'] is not None else '')
                 +"A frequência também precisa ser suficiente. Nenhuma nota cadastrada foi alterada.")
     prefix='Nos dados fictícios do protótipo, '
+    if 'complementar' in text and any(x in text for x in ('quantas', 'quantos', 'quanto', 'faltam')) and not conceptual:
+        p=data.get('progress',{})
+        if p.get('complementaryHoursRequired') is None:
+            return prefix+'não há requisito de horas complementares cadastrado para confirmar o saldo.'
+        return (prefix+f"você tem {p['complementaryHoursApproved']} horas complementares aprovadas de {p['complementaryHoursRequired']} exigidas. "
+                f"Faltam {p['complementaryHoursRemaining']} horas. Atividades pendentes ou rejeitadas não entram nessa soma.")
+    if 'optativ' in text and any(x in text for x in ('quantos', 'quantas', 'quanto')) and not conceptual:
+        course=student.get('course',{})
+        required,completed=course.get('requiredOptionalCredits'),course.get('completedOptionalCredits')
+        if required is not None and completed is not None:
+            return prefix+f"seu perfil registra {completed} créditos optativos concluídos de {required} exigidos; faltam {max(0,required-completed)} créditos optativos. Esse saldo do perfil é separado da matriz reduzida de demonstração."
     if 'pmg' in names and not conceptual:
         p=data['pmg']
         if p['value'] is None:return prefix+'você ainda não possui PMG: não há médias finais em tentativas encerradas.'
