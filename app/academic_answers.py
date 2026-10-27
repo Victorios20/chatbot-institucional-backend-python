@@ -145,7 +145,7 @@ def grounded_fallback(message, rag):
     data=rag.get('databaseQueries',{}).get('academic',{}).get('data',{})
     names={i['name'] for i in rag.get('intents',[])}
     text=normalize_text(message)
-    if 'grades' in names and data.get('gradeRules'):
+    if 'grades' in names and data.get('gradeRules') and not ('calendar' in names and any(x in text for x in ('quando','data','prazo'))):
         return ('Nas regras demonstrativas cadastradas: MI = (AV1 + AV2) ÷ 2. Abaixo de 4, há reprovação direta. '
                 'Com MI de pelo menos 4, a AV3 é obrigatória e precisa ser pelo menos 4. '
                 'A média final (MI + AV3) ÷ 2 deve ser pelo menos 5, além da frequência mínima da disciplina. '
@@ -165,7 +165,7 @@ def grounded_fallback(message, rag):
         benefits=queries.get('student_benefits',{}).get('data',[])
         statuses={'PAID':'paga','OPEN':'em aberto','OVERDUE':'em atraso','NEGOTIATION':'em negociação'}
         lines=[f"• {str(r['reference_month'])[:7]}: R$ {r['amount']:.2f}, {statuses.get(r['status'],r['status'])}; vencimento {r['due_date']}." for r in records]
-        lines.extend(f"• Benefício {b['benefit_type']}: {fmt(b['percentage'])}%, situação {b['status']}." for b in benefits)
+        lines.extend(f"• Benefício {b['benefit_type'].replace('_',' ').lower()}: {fmt(b['percentage'])}%, situação {dict(ACTIVE='ativo',SUSPENDED='suspenso',ENDED='encerrado').get(b['status'],b['status'])}." for b in benefits)
         if lines:return 'Registros financeiros fictícios:\n'+'\n'.join(lines)+'\nO assistente não emite boletos nem altera pagamentos.'
     docs=[d for d in rag.get('knowledgeDocuments',[]) if d.get('available') and d.get('sections')]
     if docs:
