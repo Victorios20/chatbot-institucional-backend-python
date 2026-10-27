@@ -163,6 +163,13 @@ INTENT_KEYWORDS.update({
     "progress": ["progresso", "quanto do curso", "quanto ja conclui", "concluir", "formar", "formatura", "creditos", "quanto falta", "porcentagem", "percentual"],
 })
 
+INTENT_KEYWORDS["history"].extend(["reprovei", "reprovadas", "reprovados"])
+INTENT_KEYWORDS["curriculum"].extend(["disciplinas pendentes", "materias pendentes"])
+INTENT_KEYWORDS["financial"].extend(["boletos", "mensalidades", "pagamentos", "bolsas", "descontos"])
+INTENT_KEYWORDS["grades"].extend(["avaliacoes", "provas", "medias", "regressao"])
+INTENT_KEYWORDS["subjects"].extend(["professores", "professoras", "cargas horarias"])
+INTENT_KEYWORDS["pmg"].extend(["media do curso", "media durante o curso", "coeficiente"])
+
 
 def normalize_text(text: str) -> str:
     decomposed = unicode_normalize("NFD", text.lower())
