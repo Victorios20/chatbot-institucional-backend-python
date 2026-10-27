@@ -61,6 +61,36 @@ class AcademicRulesTest(unittest.TestCase):
         rag={'intents':[{'name':'credits'},{'name':'curriculum'}], 'databaseQueries':{'academic':{'data':{}}}}
         answer=structured_answer('Quantos créditos optativos faltam?',rag,{'course':{'requiredOptionalCredits':12,'completedOptionalCredits':8}})
         self.assertIn('faltam 4 créditos optativos',answer)
+    def test_model_quota_failover(self):
+        from app import gemini_service as service
+        from unittest.mock import patch, MagicMock
+        from types import SimpleNamespace
+        error=RuntimeError('quota');error.code=429
+        client=MagicMock()
+        client.models.generate_content.side_effect=[error,SimpleNamespace(text='Resposta fundamentada')]
+        settings=SimpleNamespace(gemini_api_key='fake-test-key',gemini_model='primary',gemini_fallback_models=('reserve',))
+        with patch.object(service,'settings',settings), patch.object(service.genai,'Client',return_value=client), patch.dict(service._model_cooldowns,{},clear=True):
+            self.assertEqual(service.generate_chat_answer('Explique',{}),'Resposta fundamentada')
+            self.assertEqual(client.models.generate_content.call_count,2)
+            self.assertEqual(client.models.generate_content.call_args.kwargs['model'],'reserve')
+            self.assertIn('primary',service._model_cooldowns)
+    def test_all_models_unavailable_uses_retrieved_rules(self):
+        from app import gemini_service as service
+        from unittest.mock import patch, MagicMock
+        from types import SimpleNamespace
+        client=MagicMock();client.models.generate_content.side_effect=RuntimeError('unavailable')
+        settings=SimpleNamespace(gemini_api_key='fake-test-key',gemini_model='primary',gemini_fallback_models=('reserve',))
+        rag={'intents':[{'name':'grades'}],'databaseQueries':{'academic':{'data':{'gradeRules':{'initialMinimum':4}}}}}
+        with patch.object(service,'settings',settings), patch.object(service.genai,'Client',return_value=client), patch.dict(service._model_cooldowns,{},clear=True):
+            answer=service.generate_chat_answer('Como funciona AV3?',{},rag)
+            self.assertIn('AV3 é obrigatória',answer)
+            self.assertIn('pelo menos 4',answer)
+    def test_calendar_fallback_is_not_grade_rule(self):
+        from app.academic_answers import grounded_fallback
+        rag={'intents':[{'name':'calendar'},{'name':'grades'}], 'databaseQueries':{'academic':{'data':{'gradeRules':{'initialMinimum':4},'currentDate':'2026-10-26'}}, 'academic_events':{'available':True,'data':[{'title':'AV3 — calendário fictício','event_type':'EXAM_PERIOD','starts_on':'2026-11-23','ends_on':'2026-12-02'}]}}}
+        answer=grounded_fallback('Quando é a AV3?',rag)
+        self.assertIn('23/11/2026',answer)
+        self.assertNotIn('MI =',answer)
     def test_intents(self):
         for text,intent in [('Qual minha PMG?','pmg'),('Quais matérias estão disponíveis?','offerings'),
                             ('Quais pré-requisitos faltam?','prerequisites'),('Qual minha próxima aula?','schedule'),
