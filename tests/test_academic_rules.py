@@ -50,6 +50,17 @@ class AcademicRulesTest(unittest.TestCase):
         self.assertIsNone(simulate('Quais minhas notas AV1, AV2 e AV3?'))
     def test_pmg_precision(self):
         self.assertEqual(pmg([{'closed':True,'finalAverage':5,'finalAverageExact':'4.995'},{'closed':True,'finalAverage':4.99,'finalAverageExact':'4.9925'}])['value'],4.99)
+    def test_complementary_hours_routing(self):
+        from app.academic_answers import structured_answer
+        rag={'intents':[{'name':'credits'},{'name':'curriculum'}], 'databaseQueries':{'academic':{'data':{'progress':{'complementaryHoursApproved':32,'complementaryHoursRequired':120,'complementaryHoursRemaining':88}}}}}
+        answer=structured_answer('Quantas horas complementares ainda faltam?',rag,{})
+        self.assertIn('Faltam 88 horas',answer)
+        self.assertNotIn('Matriz reduzida',answer)
+    def test_optional_credits_routing(self):
+        from app.academic_answers import structured_answer
+        rag={'intents':[{'name':'credits'},{'name':'curriculum'}], 'databaseQueries':{'academic':{'data':{}}}}
+        answer=structured_answer('Quantos créditos optativos faltam?',rag,{'course':{'requiredOptionalCredits':12,'completedOptionalCredits':8}})
+        self.assertIn('faltam 4 créditos optativos',answer)
     def test_intents(self):
         for text,intent in [('Qual minha PMG?','pmg'),('Quais matérias estão disponíveis?','offerings'),
                             ('Quais pré-requisitos faltam?','prerequisites'),('Qual minha próxima aula?','schedule'),
