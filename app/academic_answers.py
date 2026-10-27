@@ -29,6 +29,8 @@ def structured_answer(message,rag,student):
                 +(f"AV3 necessária: {fmt(r['requiredAv3'])}. " if r['status']=='PENDENTE' and r['requiredAv3'] is not None else '')
                 +"A frequência também precisa ser suficiente. Nenhuma nota cadastrada foi alterada.")
     prefix='Nos dados fictícios do protótipo, '
+    if 'calendar' in names and 'offerings' not in names and any(x in text for x in ('quando','calendario','data','prazo')):
+        return grounded_fallback(message,rag)
     if 'complementar' in text and any(x in text for x in ('quantas', 'quantos', 'quanto', 'faltam')) and not conceptual:
         p=data.get('progress',{})
         if p.get('complementaryHoursRequired') is None:
