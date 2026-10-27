@@ -38,17 +38,16 @@ O banco continua sendo PostgreSQL, igual ao Java. O `docker-compose.yml` sobe:
 - senha: `postgres`
 - porta: `5432`
 
-As migrations são reaproveitadas da pasta Java por padrão:
+As migrations para criar o schema acadêmico e popular os dados de teste estão incluídas neste repositório:
 
 ```text
-../chatbot-institucional/university-erp-service/src/main/resources/db/migration
+migrations/
 ```
 
-Se quiser tornar o backend Python totalmente independente, copie essas migrations para:
-
-```text
-Backend python/migrations/
-```
+Os arquivos `V1` a `V4` foram recuperados do projeto Java no arquivo
+`Projeto Final Integrador 1.zip`, sem alterações. Não é necessário manter o projeto
+Java ao lado deste backend. Com o PostgreSQL disponível, execute
+`python -m app.db.migrate` para criar e popular o banco.
 
 ## Gemini
 
@@ -71,3 +70,8 @@ Você não precisa subir os serviços Java nem a API Node da IA para o fluxo pri
 
 - senha padrão: `senha`
 - matrículas: `2310000`, `2410002`, `2210004`, `2110006`, `2510008`, `2010010`
+
+
+## Ampliação acadêmica
+
+Notas individuais, PMG, histórico, matriz, pré-requisitos, oferta, horários e progresso: veja [ACADEMIC_EXPANSION.md](ACADEMIC_EXPANSION.md) para regras, contas fictícias, perguntas e scripts de validação.
