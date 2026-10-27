@@ -91,6 +91,8 @@ class AcademicRulesTest(unittest.TestCase):
         answer=grounded_fallback('Quando é a AV3?',rag)
         self.assertIn('23/11/2026',answer)
         self.assertNotIn('MI =',answer)
+        from app.academic_answers import structured_answer
+        self.assertIn('23/11/2026',structured_answer('Quando é a AV3?',rag,{}))
     def test_intents(self):
         for text,intent in [('Qual minha PMG?','pmg'),('Quais matérias estão disponíveis?','offerings'),
                             ('Quais pré-requisitos faltam?','prerequisites'),('Qual minha próxima aula?','schedule'),
