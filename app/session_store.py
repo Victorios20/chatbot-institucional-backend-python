@@ -39,6 +39,7 @@ class InMemorySessionStore:
 
     def add_message(self, session: StudentSession, sender: str, content: str) -> None:
         session.history.append(ChatMessage(sender=sender, content=content, created_at=datetime.now(UTC)))
+        session.history[:] = session.history[-24:]
         self.save(session)
 
 

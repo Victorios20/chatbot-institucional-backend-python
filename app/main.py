@@ -43,7 +43,7 @@ async def validation_error_handler(request, exc):
 
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok"}
+    return {"status": "ok", "version": "academic-v1"}
 
 
 @app.post("/auth/login")

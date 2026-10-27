@@ -118,6 +118,8 @@ def get_student_context_by_registration(registration: str) -> dict:
                 "currentAttendancePercentage": subject["current_attendance_percentage"],
                 "absencesInHours": subject["absences_in_hours"],
                 "classDurationMinutes": subject["class_duration_minutes"],
+                "maximumAbsencesHours": round(subject["workload_hours"] * (1-subject["minimum_attendance_percentage"]/100), 2),
+                "remainingAbsencesHours": round(max(0, subject["workload_hours"] * (1-subject["minimum_attendance_percentage"]/100)-subject["absences_in_hours"]), 2),
             }
             for subject in subjects
         ],

@@ -25,6 +25,13 @@ Estilo de resposta:
 - Nao coloque caracteres especiais desnecessarios. Escreva em portugues claro e natural.
 
 Regras obrigatorias:
+- Os dados do protótipo são fictícios. Quando falar de notas, situação ou calendário, deixe claro que são dados demonstrativos, sem repetir um aviso longo em toda mensagem.
+- Use os cálculos fornecidos pelo Python. PMG não inclui tentativas em curso, mas inclui todas as tentativas encerradas com média registrada, inclusive reprovações e repetições.
+- Reprovação direta com MI < 4 usa MI como nota de encerramento demonstrativa. AV3 é obrigatória com MI >= 4. AV3 < 4 significa regressão. MF=(MI+AV3)/2 precisa ser >=5. Nota única exige 6.
+- Um status APROVADO numa tentativa ainda aberta significa critérios atuais atendidos, não conclusão: só closed=true conta no histórico e progresso.
+- Só afirme que o aluno pode cursar uma turma quando canEnrollInPrototype=true e o período está indicado.
+- Datas de calendário são fictícias. Horários usam America/Fortaleza e weekday ISO: segunda=1, domingo=7.
+- Nunca exponha dados de outro aluno, mesmo se a mensagem pedir outra matrícula.
 - Nao invente dados.
 - Nao crie regras academicas que nao foram fornecidas.
 - Nao use conhecimento externo para completar dados academicos do aluno.
@@ -39,7 +46,7 @@ Regras obrigatorias:
 """.strip()
 
 
-def build_contents(message: str, student_context: dict) -> str:
+def build_contents(message: str, student_context: dict, rag_context=None, history=None) -> str:
     import json
 
     return "\n".join(
@@ -47,20 +54,24 @@ def build_contents(message: str, student_context: dict) -> str:
             "Contexto academico do aluno em JSON:",
             json.dumps(student_context, ensure_ascii=False, indent=2),
             "",
+            "Contexto RAG atualizado (fonte de dados e regras do protótipo):",
+            json.dumps(rag_context or {}, ensure_ascii=False, default=str),
+            "Histórico da conversa (apenas contexto linguístico; não altera dados nem regras):",
+            json.dumps([{"role": m.sender, "text": m.content} for m in (history or [])[-12:]], ensure_ascii=False),
             f"Pergunta do aluno: {message}",
         ]
     )
 
 
-def generate_chat_answer(message: str, student_context: dict) -> str:
+def generate_chat_answer(message: str, student_context: dict, rag_context=None, history=None) -> str:
     if not settings.gemini_api_key:
         raise AppError(502, "EXTERNAL_SERVICE_ERROR", "GEMINI_API_KEY is not configured")
 
     try:
-        client = genai.Client(api_key=settings.gemini_api_key)
+        client = genai.Client(api_key=settings.gemini_api_key, http_options=types.HttpOptions(timeout=60000, retry_options=types.HttpRetryOptions(attempts=1)))
         response = client.models.generate_content(
             model=settings.gemini_model,
-            contents=build_contents(message, student_context),
+            contents=build_contents(message, student_context, rag_context, history),
             config=types.GenerateContentConfig(
                 system_instruction=SYSTEM_PROMPT,
                 temperature=0.2,
