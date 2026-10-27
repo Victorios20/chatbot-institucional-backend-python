@@ -16,7 +16,7 @@ Esta versão usa dados fictícios e regras confirmadas pela equipe do TCC; não 
 
 ## Dados e migrações
 
-V1–V4 preservam os dados existentes. V5/V6 incorporam as tabelas e documentos de suporte recebidos (financeiro, bolsas, atividades, calendário, estágio e presença detalhada). V7 adiciona períodos, matriz, pré-requisitos, tentativas por período, turmas, horários e matrícula em turmas; vincula avaliações às tentativas. V8 vincula notas existentes e adiciona o catálogo e histórico demonstrativos dos seis cursos. V9 cria alunos fictícios iniciante e concluinte.
+V1–V4 preservam os dados existentes. V5/V6 incorporam as tabelas e documentos de suporte recebidos (financeiro, bolsas, atividades, calendário, estágio e presença detalhada). V7 adiciona períodos, matriz, pré-requisitos, tentativas por período, turmas, horários e matrícula em turmas; vincula avaliações às tentativas. V8 vincula notas existentes e adiciona o catálogo e histórico demonstrativos dos seis cursos. V9 cria alunos fictícios iniciante e concluinte. V10 esclarece o metadado de peso efetivo da AV3: a fórmula confirmada equivale a (AV1+AV2+2*AV3)/4, sem introduzir pesos por créditos na PMG.
 
 Não há exclusão de registros de alunos. As notas recebidas são preservadas; vagas de avaliações sem lançamento usam NULL. O migrador executa arquivos em ordem numérica e em transação. Em bancos legados sem registro de migrações, somente V1–V4 podem ser reconhecidas como baseline; V5 em diante precisam executar.
 
@@ -31,7 +31,7 @@ Scripts:
 
 Intenções adicionais: PMG/evolução, histórico, matriz, pré-requisitos, oferta, horários e progresso. Consultas sempre usam a matrícula da sessão autenticada, nunca uma matrícula fornecida na pergunta. Perguntas curtas podem recuperar a disciplina mencionada na conversa; o Gemini recebe no máximo as 12 mensagens mais recentes. O armazenamento limita a 24 mensagens por sessão. A sessão permanece em memória e pode expirar em reinício do Render.
 
-Cálculos acadêmicos são feitos no Python, não pelo Gemini. Simulações com notas AV1/AV2/AV3 explicitamente digitadas são calculadas sem alterar registros. Respostas objetivas de notas, PMG, histórico, matriz, pré-requisitos, ofertas, horários e progresso são formatadas diretamente a partir dos resultados do Python para evitar inconsistência e demora. Perguntas conceituais e abertas usam Gemini com documentos e histórico; a chamada tem limite de 60 segundos.
+Cálculos acadêmicos são feitos no Python, não pelo Gemini. Simulações com notas AV1/AV2/AV3 explicitamente digitadas são calculadas sem alterar registros. Respostas objetivas de notas, PMG, histórico, matriz, pré-requisitos, ofertas, horários, progresso e saldos de horas complementares e créditos optativos são formatadas diretamente a partir dos resultados do Python para evitar inconsistência e demora. Perguntas conceituais e abertas usam Gemini com documentos e histórico; a chamada tem limite de 60 segundos.
 
 A matriz é reduzida e demonstrativa. O percentual e os créditos da matriz não constituem previsão oficial de formatura. Requisitos gerais de optativas do perfil e horas complementares são apresentados separadamente. A elegibilidade considera pré-requisitos, vagas, disciplina já concluída, matrícula existente e conflitos de horários no mesmo período. A próxima aula usa recorrência semanal em America/Fortaleza; feriados/cancelamentos sem cadastro não são inferidos.
 
