@@ -1,0 +1,3 @@
+# Progresso e créditos
+
+O percentual é a carga horária das disciplinas concluídas dividida pela carga horária da matriz demonstrativa cadastrada. Cada disciplina conta uma única vez mesmo com repetição. Só aprovação encerrada conta. Créditos restantes e horas restantes usam essa mesma matriz reduzida. Não declarar que o aluno está apto a colar grau ou prever conclusão do curso oficial. Atividades complementares são contadas somente quando aprovadas e separadas de horas de disciplinas. Requisitos gerais de créditos optativos são fornecidos no perfil do curso, separadamente dos créditos da matriz demonstrativa.
