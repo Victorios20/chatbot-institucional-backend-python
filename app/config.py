@@ -32,6 +32,7 @@ class Settings:
     lock_duration_minutes: int = _int_env("LOCK_DURATION_MINUTES", 15)
     gemini_api_key: str = os.getenv("GEMINI_API_KEY", "")
     gemini_model: str = os.getenv("GEMINI_MODEL", "gemini-3-flash-preview")
+    gemini_fallback_models: tuple[str, ...] = tuple(m.strip() for m in os.getenv("GEMINI_FALLBACK_MODELS", "gemini-3.1-flash-lite").split(",") if m.strip())
     allowed_origin: str = os.getenv("ALLOWED_ORIGIN", "http://localhost:3000")
 
 

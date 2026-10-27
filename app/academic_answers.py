@@ -137,3 +137,40 @@ def structured_answer(message,rag,student):
                 f"Faltam {p['remainingHours']} horas e {p['remainingCredits']} créditos de disciplinas nessa matriz. "
                 "Isso não confirma os requisitos da matriz oficial nem uma data de formatura.")
     return None
+
+
+def grounded_fallback(message, rag):
+    """Only retrieved facts and verbatim institutional guidance; never invent a replacement answer."""
+    rag=rag or {}
+    data=rag.get('databaseQueries',{}).get('academic',{}).get('data',{})
+    names={i['name'] for i in rag.get('intents',[])}
+    text=normalize_text(message)
+    if 'grades' in names and data.get('gradeRules'):
+        return ('Nas regras demonstrativas cadastradas: MI = (AV1 + AV2) ÷ 2. Abaixo de 4, há reprovação direta. '
+                'Com MI de pelo menos 4, a AV3 é obrigatória e precisa ser pelo menos 4. '
+                'A média final (MI + AV3) ÷ 2 deve ser pelo menos 5, além da frequência mínima da disciplina. '
+                'Disciplinas cadastradas como nota única exigem 6 e frequência mínima.')
+    queries=rag.get('databaseQueries',{})
+    if 'calendar' in names and queries.get('academic_events',{}).get('available'):
+        events=queries['academic_events']['data']
+        if 'av3' in text:events=[e for e in events if 'av3' in normalize_text(e['title'])]
+        elif any(x in text for x in ('matricula','rematricula')):events=[e for e in events if e['event_type']=='ENROLLMENT']
+        current=data.get('currentDate','')[:10]
+        upcoming=[e for e in events if str(e['ends_on'])>=current]
+        events=upcoming or events
+        if events:
+            return 'Calendário fictício cadastrado:\n'+'\n'.join(f"• {e['title']}: {datetime.fromisoformat(str(e['starts_on'])):%d/%m/%Y} a {datetime.fromisoformat(str(e['ends_on'])):%d/%m/%Y}." for e in events[:4])+'\nEssas datas são demonstrativas, não o calendário oficial.'
+    if 'financial' in names:
+        records=queries.get('financial_records',{}).get('data',[])
+        benefits=queries.get('student_benefits',{}).get('data',[])
+        statuses={'PAID':'paga','OPEN':'em aberto','OVERDUE':'em atraso','NEGOTIATION':'em negociação'}
+        lines=[f"• {str(r['reference_month'])[:7]}: R$ {r['amount']:.2f}, {statuses.get(r['status'],r['status'])}; vencimento {r['due_date']}." for r in records]
+        lines.extend(f"• Benefício {b['benefit_type']}: {fmt(b['percentage'])}%, situação {b['status']}." for b in benefits)
+        if lines:return 'Registros financeiros fictícios:\n'+'\n'.join(lines)+'\nO assistente não emite boletos nem altera pagamentos.'
+    docs=[d for d in rag.get('knowledgeDocuments',[]) if d.get('available') and d.get('sections')]
+    if docs:
+        sections=docs[0]['sections']
+        excerpt='\n\n'.join(sections)
+        if len(excerpt)>1500:excerpt=excerpt[:1500].rsplit(' ',1)[0]+'…'
+        return 'Não consegui elaborar uma explicação personalizada agora. Nas orientações cadastradas consta:\n\n'+excerpt
+    return 'Não há informação suficiente nas orientações recuperadas para confirmar essa resposta. Reformule sua dúvida acadêmica ou consulte o setor responsável.'

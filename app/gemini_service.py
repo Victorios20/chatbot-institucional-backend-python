@@ -2,7 +2,6 @@ from google import genai
 from google.genai import types
 
 from app.config import settings
-from app.errors import AppError
 
 
 SYSTEM_PROMPT = """
@@ -63,24 +62,34 @@ def build_contents(message: str, student_context: dict, rag_context=None, histor
     )
 
 
+# Quota/transient cooldowns are per process; no prompt, student data or API key is logged.
+from time import monotonic
+import logging
+from app.academic_answers import grounded_fallback
+
+_model_cooldowns: dict[str, float] = {}
+
+
 def generate_chat_answer(message: str, student_context: dict, rag_context=None, history=None) -> str:
     if not settings.gemini_api_key:
-        raise AppError(502, "EXTERNAL_SERVICE_ERROR", "GEMINI_API_KEY is not configured")
-
-    try:
-        client = genai.Client(api_key=settings.gemini_api_key, http_options=types.HttpOptions(timeout=60000, retry_options=types.HttpRetryOptions(attempts=1)))
-        response = client.models.generate_content(
-            model=settings.gemini_model,
-            contents=build_contents(message, student_context, rag_context, history),
-            config=types.GenerateContentConfig(
-                system_instruction=SYSTEM_PROMPT,
-                temperature=0.2,
-            ),
-        )
-        answer = (response.text or "").strip()
-    except Exception as exc:
-        raise AppError(502, "EXTERNAL_SERVICE_ERROR", "Nao foi possivel obter uma resposta do Gemini no momento.") from exc
-
-    if not answer:
-        raise AppError(502, "EXTERNAL_SERVICE_ERROR", "O Gemini retornou uma resposta vazia.")
-    return answer
+        return grounded_fallback(message, rag_context)
+    models = list(dict.fromkeys((settings.gemini_model, *settings.gemini_fallback_models)))[:2]
+    client = genai.Client(api_key=settings.gemini_api_key, http_options=types.HttpOptions(timeout=25000, retry_options=types.HttpRetryOptions(attempts=1)))
+    for model in models:
+        if _model_cooldowns.get(model, 0) > monotonic():
+            continue
+        try:
+            response = client.models.generate_content(
+                model=model,
+                contents=build_contents(message, student_context, rag_context, history),
+                config=types.GenerateContentConfig(system_instruction=SYSTEM_PROMPT, temperature=0.2),
+            )
+            answer = (response.text or "").strip()
+            if answer:
+                return answer
+            _model_cooldowns[model] = monotonic() + 60
+        except Exception as exc:
+            code = getattr(exc, "code", None)
+            _model_cooldowns[model] = monotonic() + (900 if str(code)=="429" else 60)
+            logging.getLogger(__name__).warning("Academic explanation unavailable: model=%s status=%s type=%s", model, code, type(exc).__name__)
+    return grounded_fallback(message, rag_context)
