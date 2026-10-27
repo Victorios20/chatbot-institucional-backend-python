@@ -19,7 +19,7 @@ def migration_source() -> Path:
 
 
 def run_migrations(source: Path) -> None:
-    files = sorted(source.glob("V*.sql"))
+    files = sorted(source.glob("V*.sql"), key=lambda f: int(f.name.split("__")[0][1:]))
     if not files:
         raise RuntimeError(f"Nenhuma migration SQL encontrada em {source}")
 
@@ -40,22 +40,21 @@ def run_migrations(source: Path) -> None:
         schema_already_exists = conn.execute("SELECT to_regclass('public.courses') AS table_name").fetchone()["table_name"]
         if schema_already_exists and not applied:
             for file in files:
+                if int(file.name.split("__")[0][1:]) > 4:
+                    continue
                 conn.execute(
                     "INSERT INTO python_schema_migrations (version) VALUES (%s) ON CONFLICT DO NOTHING",
                     (file.stem,),
                 )
             print("Banco ja tinha o schema academico. Migrations marcadas como aplicadas.")
-            return
+            applied = {row["version"] for row in conn.execute("SELECT version FROM python_schema_migrations").fetchall()}
 
         for file in files:
             version = file.stem
             if version in applied:
                 continue
             sql = file.read_text(encoding="utf-8")
-            for statement in sql.split(";"):
-                statement = statement.strip()
-                if statement:
-                    conn.execute(statement)
+            conn.execute(sql, prepare=False)
             conn.execute("INSERT INTO python_schema_migrations (version) VALUES (%s)", (version,))
             print(f"Aplicada: {file.name}")
 
