@@ -99,7 +99,7 @@ class AcademicRulesTest(unittest.TestCase):
         from types import SimpleNamespace
         student={'registration':'test','subjects':[{'name':'Banco de Dados','remainingAbsencesHours':4,'maximumAbsencesHours':18,'absencesInHours':14,'currentAttendancePercentage':80,'minimumAttendancePercentage':75}]}
         session=SimpleNamespace(student_context=student,history=[])
-        with patch.object(service.session_store,'get',return_value=session), patch.object(service.session_store,'add_message'), patch.object(service,'get_student_context_by_registration',return_value=student), patch.object(service,'build_rag_context') as rag, patch.object(service,'generate_chat_answer') as model:
+        with patch.object(service.session_store,'get',return_value=session), patch.object(service.session_store,'add_message'), patch.object(service,'find_chat_response',return_value=None), patch.object(service,'save_chat_response',side_effect=lambda registration, request_id, question, answer, presentation, suggestions: ({'response':answer},True)), patch.object(service,'get_student_context_by_registration',return_value=student), patch.object(service,'build_rag_context') as rag, patch.object(service,'generate_chat_answer') as model:
             answer=service.send_message(SimpleNamespace(sessionId='test',message='Quantas faltas ainda posso ter em Banco de Dados?'))['response']
             self.assertIn('ainda pode faltar 4 h',answer)
             self.assertIn('limite de 18 h',answer)
