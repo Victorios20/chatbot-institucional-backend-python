@@ -44,7 +44,7 @@ def build_rag_context(message, student_context, history=None):
     result["responseRules"].extend([
         "Médias, PMG, progresso e nota necessária já foram calculados pelo Python: reproduza esses valores.",
         "Notas pendentes são null, não zero. Tentativas em curso não entram na PMG.",
-        "Situações calculadas são demonstrativas. Não declare resultados oficiais da universidade.",
+        "Use linguagem de atendimento acadêmico, sem avisos de demonstração. Não declare decisões administrativas ou resultados que não constem no registro.",
         "Diferencie catálogo da matriz, oferta por período e elegibilidade com pré-requisitos, vagas e conflitos.",
     ])
     return result

@@ -166,7 +166,7 @@ INTENT_KEYWORDS.update({
 INTENT_KEYWORDS["history"].extend(["reprovei", "reprovadas", "reprovados"])
 INTENT_KEYWORDS["curriculum"].extend(["disciplinas pendentes", "materias pendentes"])
 INTENT_KEYWORDS["financial"].extend(["boletos", "mensalidades", "pagamentos", "bolsas", "descontos"])
-INTENT_KEYWORDS["grades"].extend(["avaliacoes", "provas", "medias", "regressao"])
+INTENT_KEYWORDS["grades"].extend(["avaliacoes", "provas", "medias", "regressao", "mi", "mf", "media inicial", "media final"])
 INTENT_KEYWORDS["subjects"].extend(["professores", "professoras", "cargas horarias"])
 INTENT_KEYWORDS["pmg"].extend(["media do curso", "media durante o curso", "coeficiente"])
 
