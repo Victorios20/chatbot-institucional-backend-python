@@ -1,3 +1,4 @@
 # Pré-requisitos
 
-Uma disciplina pode exigir aprovação em uma ou mais outras disciplinas da mesma matriz. Apenas tentativas encerradas aprovadas satisfazem o requisito. Identifique pré-requisitos ainda pendentes, mesmo se a disciplina estiver sendo cursada agora. Não confundir pré-requisito atendido com disponibilidade de vagas, ausência de choque de horários ou autorização oficial de matrícula.
+Uma disciplina pode exigir aprovação em outras matérias da matriz. Só disciplinas finalizadas com aprovação satisfazem o requisito.
+Identifique pré-requisitos ainda pendentes, inclusive matérias em andamento. Pré-requisito atendido não garante vagas, ausência de conflito de horários nem matrícula efetuada.

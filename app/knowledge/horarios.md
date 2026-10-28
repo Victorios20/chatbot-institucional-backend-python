@@ -1,3 +1,5 @@
-# Horários e próxima aula
+# Horários e salas
 
-Use apenas turmas do aluno no período atual. Dias seguem ISO: segunda=1, terça=2, quarta=3, quinta=4, sexta=5, sábado=6 e domingo=7. Use a data e o fuso America/Fortaleza recebidos do backend. A próxima aula é calculada pela grade semanal recorrente, sem considerar cancelamentos, feriados ou reposições não cadastrados. Professor e sala são demonstrativos. Não interpretar oferta futura como matrícula atual.
+Use as turmas do aluno no período atual. Dias ISO: segunda=1 até domingo=7. Use America/Fortaleza e a data recebida do backend. A próxima aula usa a grade semanal; não invente feriados, cancelamentos ou reposições.
+As salas têm uma letra de A a Z seguida por dois dígitos de 01 a 99. Exemplos de formato: A14, D86, K10, K14, T06. Mostre a sala cadastrada e o bloco correspondente: sala D14 — bloco D. Nunca gere um código de sala por conta própria.
+Uma oferta futura não é uma matrícula atual.
