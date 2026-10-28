@@ -87,7 +87,7 @@ def get_academic_context(registration):
     required=[s for s in curriculum if s['category']=='REQUIRED']
     optional=[s for s in curriculum if s['category']=='OPTIONAL']
     approved_hours=sum(a['hours'] for a in activities if a['status']=='APPROVED')
-    return {'dataSource':'Dados fictícios do TCC. Matriz reduzida de demonstração, não matriz oficial nem previsão de formatura.',
+    return {'dataSource':'Registros acadêmicos cadastrados. O progresso considera somente a matriz disponível e não confirma autorização para formatura.',
             'currentDate':now.isoformat(),'currentTerm':current,
             'gradeRules':{'initialMinimum':4,'av3Minimum':4,'finalMinimum':5,'singleGradeMinimum':6,
               'av3Mandatory':True,'formula':'MI=(AV1+AV2)/2; MF=(MI+AV3)/2'},
@@ -95,7 +95,7 @@ def get_academic_context(registration):
             'pmgByTerm':[{'term':t,**pmg([a for a in attempts if a['term_id']==t])} for t in sorted({a['term_id'] for a in attempts})],
             'curriculum':curriculum,'offerings':offerings,'schedule':schedule,
             'nextClass':min(upcoming,key=lambda x:x['startsOn']) if upcoming else None,
-            'progress':{'scope':'Matriz demonstrativa cadastrada; não confirma conclusão oficial do curso',
+            'progress':{'scope':'Matriz curricular cadastrada; conclusão depende dos demais requisitos acadêmicos',
               'totalHours':total_hours,'completedHours':done_hours,'remainingHours':total_hours-done_hours,
               'totalCredits':total_credits,'completedCredits':done_credits,'remainingCredits':total_credits-done_credits,
               'percentage':round(100*done_hours/total_hours,2) if total_hours else 0,
