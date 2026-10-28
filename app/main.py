@@ -3,11 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 
-from app.chatbot_service import login, send_message
+from app.chatbot_service import login, send_message, get_chat_session, submit_feedback
 from app.config import settings
 from app.erp_auth_service import context_from_token, erp_login, erp_refresh
 from app.errors import AppError, app_error_handler, error_body
-from app.schemas import ChatRequest, LoginRequest, RefreshTokenRequest
+from app.schemas import ChatRequest, ChatResponse, ChatFeedbackRequest, LoginRequest, RefreshTokenRequest
 
 app = FastAPI(title="Backend Python - Chatbot Institucional")
 
@@ -51,7 +51,7 @@ def public_login(request: LoginRequest) -> dict:
     return login(request)
 
 
-@app.post("/chat/message")
+@app.post("/chat/message", response_model=ChatResponse)
 def public_chat_message(request: ChatRequest) -> dict:
     return send_message(request)
 
@@ -71,3 +71,15 @@ def refresh(request: RefreshTokenRequest) -> dict:
 @app.get("/erp/students/me/context")
 def student_context(authorization: str | None = Header(default=None)) -> dict:
     return context_from_token(authorization)
+
+
+@app.get('/chat/session')
+def current_chat_session(authorization: str | None = Header(default=None)) -> dict:
+    if not authorization or not authorization.startswith('Bearer '):
+        raise AppError(401, 'SESSION_NOT_FOUND', 'Faça login para continuar.')
+    return get_chat_session(authorization[7:])
+
+
+@app.post('/chat/feedback')
+def chat_feedback(request: ChatFeedbackRequest) -> dict:
+    return submit_feedback(request)

@@ -1,7 +1,10 @@
 from app.errors import AppError
 from app.gemini_service import generate_chat_answer
 from app.rag.rag_service import build_rag_context
-from app.academic_answers import structured_answer, attendance_answer, clean_label
+from app.academic_answers import structured_result, attendance_answer, clean_label
+from app.chat_presentation import follow_up_suggestions
+from app.chat_repository import find_chat_response, save_chat_response, save_feedback
+from uuid import uuid4
 from app.rag.intent_classifier import classify_intents, detect_subjects, normalize_text
 from app.schemas import ChatRequest, LoginRequest
 from app.security import password_matches
@@ -39,7 +42,15 @@ def login(request: LoginRequest) -> dict:
 def send_message(request: ChatRequest) -> dict:
     session = session_store.get(request.sessionId.strip())
     message = request.message.strip()
+    registration = session.student_context['registration']
+    request_id = getattr(request, 'requestId', None) or uuid4()
+    cached = find_chat_response(registration, request_id, message)
+    if cached:
+        return cached
     names = {i.name for i in classify_intents(message)}
+    presentation = None
+    academic = {}
+    detected = []
     answer = None
     if 'attendance' in names and not names & {'grades', 'pmg', 'financial', 'calendar', 'history'}:
         fresh = get_student_context_by_registration(session.student_context['registration'])
@@ -53,11 +64,30 @@ def send_message(request: ChatRequest) -> dict:
         answer = attendance_answer(message, fresh, detected)
     if answer is None:
         rag_context = build_rag_context(message, session.student_context, session.history)
-        answer = structured_answer(message, rag_context, session.student_context)
+        result = structured_result(message, rag_context, session.student_context)
+        answer = result.text if result else None
+        presentation = result.presentation if result else None
+        academic = rag_context.get('databaseQueries', {}).get('academic', {}).get('data', {})
+        detected = rag_context.get('detectedSubjects', [])
+        names = {i['name'] for i in rag_context.get('intents', [])}
         if answer is None:
             answer = generate_chat_answer(message, session.student_context, rag_context=rag_context, history=session.history)
     answer = clean_label(answer)
     answer = answer[:1].upper() + answer[1:]
-    session_store.add_message(session, "STUDENT", message)
-    session_store.add_message(session, "ASSISTANT", answer)
-    return {"response": answer}
+    suggestions = [s for s in follow_up_suggestions(names, detected, academic) if normalize_text(s) != normalize_text(message)][:3]
+    reply, created = save_chat_response(registration, request_id, message, answer, presentation, suggestions)
+    if created:
+        session_store.add_message(session, "STUDENT", message)
+        session_store.add_message(session, "ASSISTANT", answer)
+    return reply
+
+
+def get_chat_session(session_id):
+    student = session_store.get(session_id.strip()).student_context
+    course = student.get('course', {})
+    return {'student': {'fullName': student['fullName'], 'courseName': course.get('name'), 'semester': course.get('currentSemester')}}
+
+
+def submit_feedback(request):
+    session = session_store.get(request.sessionId.strip())
+    return save_feedback(session.student_context['registration'], request.messageId, request.rating)

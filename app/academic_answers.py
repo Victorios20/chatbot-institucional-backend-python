@@ -2,6 +2,7 @@
 import re
 from datetime import datetime, timedelta
 from app.rag.intent_classifier import normalize_text
+from app.chat_presentation import AcademicAnswer, grade_presentation
 
 DAYS=['segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado','domingo']
 LABELS={'APROVADO':'notas e frequência suficientes','PENDENTE':'aguardando lançamento das avaliações','REPROVADO_MEDIA_INICIAL':'reprovação pela média inicial',
@@ -18,7 +19,18 @@ def fmt(v):
     return 'pendente' if v is None else f'{v:.2f}'.rstrip('0').rstrip('.').replace('.',',')
 
 
-def structured_answer(message,rag,student):
+def structured_answer(message, rag, student):
+    """Text-only compatibility entry point used by scripts and rule tests."""
+    result = structured_result(message, rag, student)
+    return result.text if result else None
+
+
+def structured_result(message, rag, student):
+    result = _structured_answer(message, rag, student)
+    return AcademicAnswer(result) if isinstance(result, str) else result
+
+
+def _structured_answer(message,rag,student):
     data=rag.get('databaseQueries',{}).get('academic',{}).get('data',{})
     names={i['name'] for i in rag.get('intents',[])}
     detected=rag.get('detectedSubjects',[])
@@ -77,7 +89,7 @@ def structured_answer(message,rag,student):
             suffix+=f". Média final: {fmt(a['finalAverage'])}." if a['finalAverage'] is not None else "\n  A média final será calculada quando todas as notas necessárias forem lançadas."
             if a['status'] != 'PENDENTE': suffix+=f" Situação: {LABELS[a['status']]}."
             lines.append(f"• {a['name']} ({a['term_id']}, {'finalizada' if a['closed'] else 'em andamento'}): {g}{suffix}")
-        return 'Suas notas:\n'+'\n'.join(lines)
+        return AcademicAnswer('Suas notas:\n'+'\n'.join(lines), grade_presentation(attempts, fmt))
     if 'prerequisites' in names and not conceptual:
         subjects=[s for s in data.get('curriculum',[]) if s['name'] in detected]
         if not subjects:return 'De qual disciplina você quer consultar os pré-requisitos?'
