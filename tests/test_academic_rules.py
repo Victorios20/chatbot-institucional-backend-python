@@ -93,6 +93,23 @@ class AcademicRulesTest(unittest.TestCase):
         self.assertNotIn('MI =',answer)
         from app.academic_answers import structured_answer
         self.assertIn('23/11/2026',structured_answer('Quando é a AV3?',rag,{}))
+    def test_attendance_bypasses_model_and_full_rag(self):
+        from app import chatbot_service as service
+        from unittest.mock import patch
+        from types import SimpleNamespace
+        student={'registration':'test','subjects':[{'name':'Banco de Dados','remainingAbsencesHours':4,'maximumAbsencesHours':18,'absencesInHours':14,'currentAttendancePercentage':80,'minimumAttendancePercentage':75}]}
+        session=SimpleNamespace(student_context=student,history=[])
+        with patch.object(service.session_store,'get',return_value=session), patch.object(service.session_store,'add_message'), patch.object(service,'get_student_context_by_registration',return_value=student), patch.object(service,'build_rag_context') as rag, patch.object(service,'generate_chat_answer') as model:
+            answer=service.send_message(SimpleNamespace(sessionId='test',message='Quantas faltas ainda posso ter em Banco de Dados?'))['response']
+            self.assertIn('ainda pode faltar 4 h',answer)
+            self.assertIn('limite de 18 h',answer)
+            rag.assert_not_called()
+            model.assert_not_called()
+    def test_attendance_over_limit_and_abono(self):
+        from app.academic_answers import attendance_answer
+        student={'subjects':[{'name':'Banco de Dados','remainingAbsencesHours':0,'maximumAbsencesHours':18,'absencesInHours':20,'currentAttendancePercentage':70,'minimumAttendancePercentage':75}]}
+        self.assertIn('ultrapassado em 2 h',attendance_answer('Quantas faltas tenho?',student))
+        self.assertIsNone(attendance_answer('Como abonar minhas faltas?',student))
     def test_intents(self):
         for text,intent in [('Qual minha PMG?','pmg'),('Quais matérias estão disponíveis?','offerings'),
                             ('Quais pré-requisitos faltam?','prerequisites'),('Qual minha próxima aula?','schedule'),
